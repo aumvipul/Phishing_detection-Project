@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Detection System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+			background-image:URL("https://imgs.search.brave.com/Kee4XB-EsHu_Cbt5UkYTfUiB1ITj4lbnNbptNzgasAk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTMy/NzUyMDQxNC92ZWN0/b3IvcGhpc2hpbmct/ZW1haWwtaGFja2lu/Zy1mcmF1ZC1lbnZl/bG9wZS5qcGc_cz02/MTJ4NjEyJnc9MCZr/PTIwJmM9U2c2Zmdp/ZjhPbEMyUHFlUUdN/bkpJdDFMRXRJNVlY/dkw3eXdjZzY4TWlV/WT0");
+        }
+        .container {
+            margin-top: 50px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            background-color: white;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        footer {
+            margin-top: 30px;
+            padding: 10px 0;
+            text-align: center;
+            background-color: #f1f1f1;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h2 {
+            font-size: 2.5em;
+            color: #007bff;
+        }
+        .header p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        .btn-custom {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #218838;
+        }
+        .form-control {
+            border-radius: 20px;
+        }
+        .footer-text {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .icon {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2><i class="fas fa-shield-alt icon"></i> Phishing Detection System</h2>
+        <p>Enter a URL to check its safety</p>
+    </div>
+    <form id="urlForm">
+        <div class="form-group">
+            <input type="text" class="form-control" id="urlInput" placeholder="https://example.com" required>
+        </div>
+        <button type="submit" class="btn btn-custom btn-block">Check URL</button>
+    </form>
+    <div id="result" class="text-center"></div>
+</div>
+
+<footer>
+    <p class="footer-text">Developed by Aum Vipul</p>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#urlForm').on('submit', function(e) {
+            e.preventDefault();
+            const url = $('#urlInput').val();
+
+            // Show loading text
+            $('#result').text('Checking...');
+
+            // Prepare the data object based on the expected structure
+            const urlData = {
+                having_IP_Address: 0, // Modify based on your own checks
+                URL_Length: url.length,
+                Shortining_Service: 0, // Modify based on your logic
+                having_At_Symbol: url.includes('@') ? 1 : 0,
+                double_slash_redirecting: url.includes('//') ? 1 : 0,
+                Prefix_Suffix: (url.startsWith('www.') || url.endsWith('.com')) ? 1 : 0,
+                having_Sub_Domain: url.split('.').length > 2 ? 1 : 0,
+                SSLfinal_State: url.startsWith('https') ? 1 : 0,
+                Domain_registeration_length: 10, // Placeholder
+                Google_Index: 1, // Modify based on your logic
+                DNSRecord: 1, // Modify based on your logic
+                Page_Rank: 5 // Modify based on your logic
+            };
+
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url_data: urlData }) // Send the structured data
+            })
+            .then(response => response.json())
+            .then(data => {
+                $('#result').text(data.message || data.error); // Show response message
+                $('#urlInput').val('');  // Clear the input
+            })
+            .catch(error => {
+                $('#result').text('Error: ' + error);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
